@@ -1,0 +1,204 @@
+A quick test script comparing GPU and CPU speeds on Ann.
+pgc++ compiler version:
+
+pgc++ 15.10-0 64-bit target on x86-64 Linux -tp sandybridge 
+The Portland Group - PGI Compilers and Tools
+Copyright (c) 2015, NVIDIA CORPORATION.  All rights reserved.
+
+g++ compiler version:
+g++ (Ubuntu 4.8.5-2ubuntu1~14.04.1) 4.8.5
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Compiling using pgc++, 3D ACC parallelization
+NOTE: your trial license will expire in 8 days, 9.68 hours.
+main:
+     36, Generating present(pa,_pa[:])
+     43, Accelerator kernel generated
+         Generating Tesla code
+         43, #pragma acc loop gang /* blockIdx.x */
+         60, #pragma acc loop vector(128) /* threadIdx.x */
+     53, Loop is parallelizable
+     60, Loop is parallelizable
+cosmo::periodicArray<int, double>::createDev():
+     22, include "periodicArray.h"
+          34, Generating enter data copyin(this[:1])
+              Generating enter data create(_array[:pts])
+              Generating update device(name,pts,nz,ny,nx)
+cosmo::periodicArray<int, double>::deleteDev():
+     22, include "periodicArray.h"
+          39, Generating exit data delete(this[:1],_array[:pts])
+cosmo::periodicArray<int, double>::updateDev():
+     22, include "periodicArray.h"
+          44, Generating update device(_array[:pts])
+cosmo::periodicArray<int, double>::updateHost():
+     22, include "periodicArray.h"
+          49, Generating update host(_array[:pts])
+cosmo::periodicArray<int, double>::init(int, int, int):
+     22, include "periodicArray.h"
+cosmo::periodicArray<int, double>::idx(int, int, int):
+     22, include "periodicArray.h"
+          77, Generating implicit acc routine seq
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	0m4.900s
+user	0m1.956s
+sys	0m1.274s
+Compiling using pgc++, 2D ACC parallelization
+NOTE: your trial license will expire in 8 days, 9.67 hours.
+main:
+     43, Generating present(pa,_pa[:])
+     53, Accelerator kernel generated
+         Generating Tesla code
+         53, #pragma acc loop gang /* blockIdx.x */
+         60, #pragma acc loop vector(128) /* threadIdx.x */
+         Loop is parallelizable
+cosmo::periodicArray<int, double>::createDev():
+     22, include "periodicArray.h"
+          34, Generating enter data copyin(this[:1])
+              Generating enter data create(_array[:pts])
+              Generating update device(name,pts,nz,ny,nx)
+cosmo::periodicArray<int, double>::deleteDev():
+     22, include "periodicArray.h"
+          39, Generating exit data delete(this[:1],_array[:pts])
+cosmo::periodicArray<int, double>::updateDev():
+     22, include "periodicArray.h"
+          44, Generating update device(_array[:pts])
+cosmo::periodicArray<int, double>::updateHost():
+     22, include "periodicArray.h"
+          49, Generating update host(_array[:pts])
+cosmo::periodicArray<int, double>::init(int, int, int):
+     22, include "periodicArray.h"
+cosmo::periodicArray<int, double>::idx(int, int, int):
+     22, include "periodicArray.h"
+          77, Generating implicit acc routine seq
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	0m6.937s
+user	0m2.622s
+sys	0m1.668s
+Compiling using pgc++, 3D OpenMP parallelization
+NOTE: your trial license will expire in 8 days, 9.67 hours.
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	0m5.697s
+user	2m45.288s
+sys	0m0.513s
+Compiling using pgc++, 2D OpenMP parallelization
+NOTE: your trial license will expire in 8 days, 9.67 hours.
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	0m7.287s
+user	3m38.318s
+sys	0m0.448s
+Compiling using pgc++, no parallelization
+NOTE: your trial license will expire in 8 days, 9.67 hours.
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	1m12.434s
+user	1m12.183s
+sys	0m0.276s
+Compiling using g++, 3D OpenMP parallelization
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	0m5.341s
+user	2m35.789s
+sys	0m0.624s
+Compiling using g++, 2D OpenMP parallelization
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	0m7.409s
+user	3m45.075s
+sys	0m0.501s
+Compiling using g++, no parallelization
+Running...
+Initializing array...
+Running loop...
+Returning data to host...
+An array value is: 
+ pa(1, 5, 7) = 41.4372
+ analytic expectation is: 41.4372
+Timing information: 
+real	1m58.419s
+user	1m58.189s
+sys	0m0.268s
+
+---------------------------
+Timing information summary:
+---------------------------
+
+PGI OpenACC 3D parallelization times: 
+real	0m4.900s
+user	0m1.956s
+sys	0m1.274s
+PGI OpenACC 2D parallelization times: 
+real	0m6.937s
+user	0m2.622s
+sys	0m1.668s
+PGI OpenMP 3D parallelization times: 
+real	0m5.697s
+user	2m45.288s
+sys	0m0.513s
+PGI OpenMP 2D parallelization times: 
+real	0m7.287s
+user	3m38.318s
+sys	0m0.448s
+PGI no parallelization times: 
+real	1m12.434s
+user	1m12.183s
+sys	0m0.276s
+GCC OpenMP 3D parallelization times: 
+real	0m5.341s
+user	2m35.789s
+sys	0m0.624s
+GCC OpenMP 2D parallelization times: 
+real	0m7.409s
+user	3m45.075s
+sys	0m0.501s
+GCC no parallelization times: 
+real	1m58.419s
+user	1m58.189s
+sys	0m0.268s
