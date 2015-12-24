@@ -1,7 +1,7 @@
 #ifndef PERIODARRAY_H
 #define PERIODARRAY_H
 
-namespace cosmo
+namespace utils
 {
 
 template<typename IT, typename RT>
@@ -113,6 +113,6 @@ class periodicArray
     }
 };
 
-} // namespace cosmo
+} // namespace utils
 
 #endif
