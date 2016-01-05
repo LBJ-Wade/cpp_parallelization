@@ -1,8 +1,47 @@
 # C++ Parallelization Tests
 
-This repo contains some basic c++ code, set up to run in parallel on either multiple CPU cores or a GPU. The idea is to not only parallelize the code, but do so using some modern c++11 features, wrapping up some OpenACC directives in a class.
+This repository contains some basic c++ code, set up to run in parallel on either multiple CPU cores or a GPU. The idea is to not only parallelize the code, but do so using some modern c++11 features, wrapping up OpenACC directives in a class.
 
-Some timing information suggests parallelization is good overall:
+The code creates a large "3D" array (lattice), and uses an iterative statement to solve an algebraic problem for each point in the lattice. Values calculated and stored at points on the lattice have no dependency on other lattice points, so parallelization can be done in several ways. A comparison can then be made between execution speeds for different parallelization schemes.
+
+## Running the code
+
+### Initial setup
+
+#### Running on the HPCC at Case Western (hpclogin.cwru.edu)
+
+The code should work on the hpctest node at CWRU. In order to run this code, first log in to hpctest:
+`$ ssh hpctest`
+And then request a node with a GPU:
+`$ qsub -q gpufermi -l nodes=1:ppn=12:gpus=2 -I`
+Finally, the following modules should be loaded so the code can compile:
+`$ module load gcc/4.9.3`
+`$ module load pgi/15.10`
+`$ module load cuda/7.0.28`
+
+#### Running on Ann (ann.kenyon.edu)
+
+Ann is currently configured so that this code will run as-is.
+
+### Downloading and compiling
+
+The code can be cloned from github:
+`$ git clone https://github.com/cwru-pat/cpp_parallelization.git && cd cpp_parallelization`
+(If you intend to develop on the HPCC at CWRU, a newer version of git may be helpful too; eg. `$ module load git/2.4.8`)
+
+The code can then be compiled using either the PGI compiler or GCC. Compile statements should look similar to:
+`$ pgc++ -std=c++11 -O4 -fast -acc -Minfo=accel main.cpp -o main -DCONFIG_ACC_3D=true`
+Where the `CONFIG_ACC_3D` variable will enable one of a few parallelizations options, as described [in the code](https://github.com/cwru-pat/cpp_parallelization/blob/master/main.cpp#L26).
+For GCC, a compile statement might look like
+`g++ -std=c++11 -O3 -ffast-math -fopenmp main.cpp -o main -DCONFIG_OMP_3D=true`
+
+Once compiled, the executable `main` can then be run and timed, eg. using a command like `$ time ./main`.
+
+The script `$ ./run_tests.sh` will compile the code using a variety of options and will print some timing information.
+
+## Results
+
+Some timing information from Ann suggests parallelization is good overall. Ann has a Tesla K40m graphics card, and 32 Intel(R) Xeon(R) CPU E5-2650 v2 @ 2.60GHz CPUs. Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp sandybridge` and `g++ (Ubuntu 4.8.5-2ubuntu1~14.04.1) 4.8.5`. Timing results follow:
 
 - PGI OpenACC 3D parallelization:
   - 0m4.900s
@@ -21,4 +60,13 @@ Some timing information suggests parallelization is good overall:
 - GCC no parallelization:
   - 1m58.419s
 
-But for hardware and a code similar to this on ann(.kenyon.edu), GPU speedups may not be too significant compared to just running on many cpus.
+Nodes on the CWRU HPCC also strongly benefit from parallelization, and to a larger extent. OpenMP parallelization was not working for these tests, so results are not included. GPU nodes on the cluster have Tesla M2090 cards, and 12 Intel(R) Xeon(R) CPU X5650  @ 2.67GHz CPUs.  Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp nehalem` and `g++ (GCC) 4.9.3`. Timing results follow:
+
+- PGI OpenACC 3D parallelization times:
+  - 0m1.049s
+- PGI OpenACC 2D parallelization times:
+  - 0m1.587s
+- GCC no parallelization times:
+  - 2m40.134s
+
+For hardware and a code similar to this on ann(.kenyon.edu), GPU speedups may not be too significant compared to just running on many cpus. For nodes such as those on the HPCC at CWRU with fewer cores and less cache, speedups may be significantly larger.
