@@ -16,7 +16,7 @@ $ ssh hpctest
 ```
 And then request a node with a GPU:
 ```{r, engine='bash', hpctest_gpureq}
-$ qsub -q gpufermi -l nodes=1:ppn=12:gpus=2 -I
+$ srun --gres=gpu:1 -c 12 -N 1 -p gpufermi --pty /bin/bash
 ```
 Finally, the following modules should be loaded so the code can compile:
 ```{r, engine='bash', loadgcc}
@@ -76,13 +76,23 @@ Some timing information from Ann suggests parallelization is good overall. Ann h
 - GCC no parallelization:
   - 1m58.419s
 
-Nodes on the CWRU HPCC also strongly benefit from parallelization, and to a larger extent. OpenMP parallelization was not working for these tests, so results are not included. GPU nodes on the cluster have Tesla M2090 cards, and 12 Intel(R) Xeon(R) CPU X5650  @ 2.67GHz CPUs.  Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp nehalem` and `g++ (GCC) 4.9.3`. Timing results follow:
+Nodes on the CWRU HPCC also strongly benefit from parallelization, and to a larger extent. GPU nodes on the cluster have Tesla M2090 cards, and 12 Intel(R) Xeon(R) CPU X5650  @ 2.67GHz CPUs.  Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp nehalem` and `g++ (GCC) 4.9.3` (and `num_threads(12)` specified). Timing results follow:
 
-- PGI OpenACC 3D parallelization times:
-  - 0m1.049s
-- PGI OpenACC 2D parallelization times:
-  - 0m1.587s
-- GCC no parallelization times:
-  - 2m40.134s
+- PGI OpenACC 3D parallelization:
+  - 0m1.044s
+- PGI OpenACC 2D parallelization:
+  - 0m1.492s
+- PGI OpenMP 3D parallelization:
+  - 0m14.097s
+- PGI OpenMP 2D parallelization:
+  - 0m14.539s
+- PGI no parallelization:
+  - 2m42.114s
+- GCC OpenMP 3D parallelization:
+  - 0m14.065s
+- GCC OpenMP 2D parallelization:
+  - 0m14.383s
+- GCC no parallelization:
+  - 2m40.087s
 
 For hardware and a code similar to this on ann(.kenyon.edu), GPU speedups may not be too significant compared to just running on many cpus. For nodes such as those on the HPCC at CWRU with fewer cores and less cache, speedups may be significantly larger.
