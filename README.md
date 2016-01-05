@@ -11,13 +11,23 @@ The code creates a large "3D" array (lattice), and uses an iterative statement t
 #### Running on the HPCC at Case Western (hpclogin.cwru.edu)
 
 The code should work on the hpctest node at CWRU. In order to run this code, first log in to hpctest:
-`$ ssh hpctest`
+```{r, engine='bash', hpctest_login}
+$ ssh hpctest
+```
 And then request a node with a GPU:
-`$ qsub -q gpufermi -l nodes=1:ppn=12:gpus=2 -I`
+```{r, engine='bash', hpctest_gpureq}
+$ qsub -q gpufermi -l nodes=1:ppn=12:gpus=2 -I
+```
 Finally, the following modules should be loaded so the code can compile:
-`$ module load gcc/4.9.3`
-`$ module load pgi/15.10`
-`$ module load cuda/7.0.28`
+```{r, engine='bash', loadgcc}
+$ module load gcc/4.9.3
+```
+```{r, engine='bash', loadpgi}
+$ module load pgi/15.10
+```
+```{r, engine='bash', loadcuda}
+$ module load cuda/7.0.28
+```
 
 #### Running on Ann (ann.kenyon.edu)
 
@@ -26,14 +36,20 @@ Ann is currently configured so that this code will run as-is.
 ### Downloading and compiling
 
 The code can be cloned from github:
-`$ git clone https://github.com/cwru-pat/cpp_parallelization.git && cd cpp_parallelization`
+```{r, engine='bash', clone}
+$ git clone https://github.com/cwru-pat/cpp_parallelization.git && cd cpp_parallelization
+```
 (If you intend to develop on the HPCC at CWRU, a newer version of git may be helpful too; eg. `$ module load git/2.4.8`)
 
 The code can then be compiled using either the PGI compiler or GCC. Compile statements should look similar to:
-`$ pgc++ -std=c++11 -O4 -fast -acc -Minfo=accel main.cpp -o main -DCONFIG_ACC_3D=true`
+```{r, engine='bash', pgicompile}
+$ pgc++ -std=c++11 -O4 -fast -acc -Minfo=accel main.cpp -o main -DCONFIG_ACC_3D=true
+```
 Where the `CONFIG_ACC_3D` variable will enable one of a few parallelizations options, as described [in the code](https://github.com/cwru-pat/cpp_parallelization/blob/master/main.cpp#L26).
 For GCC, a compile statement might look like
-`g++ -std=c++11 -O3 -ffast-math -fopenmp main.cpp -o main -DCONFIG_OMP_3D=true`
+```{r, engine='bash', gcccompile}
+g++ -std=c++11 -O3 -ffast-math -fopenmp main.cpp -o main -DCONFIG_OMP_3D=true
+```
 
 Once compiled, the executable `main` can then be run and timed, eg. using a command like `$ time ./main`.
 
