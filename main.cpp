@@ -11,10 +11,11 @@ int main(void) {
   int i, j, k, s;
 
   std::cout << "Initializing periodicArray class...\n";
-  // create a periodicArray class
+  // create a periodicArray class instance
   utils::periodicArray<int, double> pa;
   // Call the initialization routine.
-  // When using ACC, data should now exist on device.
+  // When using ACC, this routine creates a reference to the class
+  // and internal array on the device.
   pa.init(N, N, N);
   // create a variable referencing the internal array of the class.
   double * const _pa = pa._array;
@@ -33,7 +34,7 @@ int main(void) {
     //    parallelize all 3 loops using OpenACC directives
     //  - CONFIG_ACC_2D
     //    parallelize only the inner 2 loops using OpenACC directives
-    // Parallelizing only the inner 2 loops may be necessary in some cases, as
+    // Parallelizing only the inner 2 loops may be desirable in some cases,
     // such as for nontrivial lattice integration routines.
     #if CONFIG_OMP_3D
       #pragma omp parallel for default(shared) private(i, j, k) num_threads(32)

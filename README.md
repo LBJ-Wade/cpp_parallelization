@@ -1,8 +1,8 @@
 # C++ Parallelization Tests
 
-This repository contains some basic c++ code, set up to run in parallel on either multiple CPU cores or a GPU. The idea is to not only parallelize the code, but do so using some modern c++11 features, wrapping up OpenACC directives in a class.
+This repository contains some basic c++ code, set up to run in parallel on either multiple CPU cores or a GPU. The idea is to not only parallelize the code, but do so using some modern c++11 features, wrapping OpenACC directives in class methods.
 
-The code creates a large "3D" array (lattice), and uses an iterative statement to solve an algebraic problem for each point in the lattice. Values calculated and stored at points on the lattice have no dependency on other lattice points, so parallelization can be done in several ways. A comparison can then be made between execution speeds for different parallelization schemes.
+The code creates a large "3D" array (lattice), and uses an iterative method to solve an algebraic problem for each point in the lattice. Values calculated and stored at points on the lattice have no dependency on other lattice points, so parallelization can be done in several ways. A comparison can then be made between execution speeds for different parallelization schemes.
 
 ## Running the code
 
@@ -57,7 +57,7 @@ The script `$ ./run_tests.sh` will compile the code using a variety of options a
 
 ## Results
 
-Some timing information from Ann suggests parallelization is good overall. Ann has a Tesla K40m graphics card, and 32 Intel(R) Xeon(R) CPU E5-2650 v2 @ 2.60GHz CPUs. Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp sandybridge` and `g++ (Ubuntu 4.8.5-2ubuntu1~14.04.1) 4.8.5`. Timing results follow:
+Some timing information from Ann suggests parallelization is highly beneficial. Ann has a Tesla K40m graphics card, and 32 Intel(R) Xeon(R) CPU E5-2650 v2 @ 2.60GHz CPUs. Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp sandybridge` and `g++ (Ubuntu 4.8.5-2ubuntu1~14.04.1) 4.8.5`. Timing results follow:
 
 - PGI OpenACC 3D parallelization:
   - 0m4.900s
@@ -76,7 +76,7 @@ Some timing information from Ann suggests parallelization is good overall. Ann h
 - GCC no parallelization:
   - 1m58.419s
 
-Nodes on the CWRU HPCC also strongly benefit from parallelization, and to a larger extent. GPU nodes on the cluster have Tesla M2090 cards, and 12 Intel(R) Xeon(R) CPU X5650  @ 2.67GHz CPUs.  Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp nehalem` and `g++ (GCC) 4.9.3` (and `num_threads(12)` specified). Timing results follow:
+Nodes on the CWRU HPCC also strongly benefit from parallelization, to a larger extent than Ann for this code. GPU nodes on the cluster have Tesla M2090 cards, and 12 Intel(R) Xeon(R) CPU X5650  @ 2.67GHz CPUs.  Code was compiled using `pgc++ 15.10-0 64-bit target on x86-64 Linux -tp nehalem` and `g++ (GCC) 4.9.3` (and `num_threads(12)` specified). Timing results follow:
 
 - PGI OpenACC 3D parallelization:
   - 0m1.044s
